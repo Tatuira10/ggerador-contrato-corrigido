@@ -1,13 +1,435 @@
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Formulário para Geração de Contrato</title>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+            margin: 0;
+        }
+        .form-container {
+            background-color: #ffffff;
+            border-radius: 15px;
+            padding: 30px;
+            width: 350px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e0e0e0;
+        }
+        h2 {
+            text-align: center;
+            font-size: 22px;
+            color: #1e3a8a;
+            margin-bottom: 25px;
+            font-weight: 600;
+        }
+        h3 {
+            font-size: 16px;
+            color: #1e3a8a;
+            margin-bottom: 15px;
+            font-weight: 500;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: #333;
+            font-weight: 500;
+        }
+        input, select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 5px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 14px;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        input:focus, select:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 5px rgba(59, 130, 246, 0.3);
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            transition: background-color 0.3s ease, transform 0.1s ease;
+        }
+        .submit-btn {
+            background-color: #3b82f6;
+            color: #fff;
+            margin-bottom: 10px;
+        }
+        .submit-btn:hover {
+            background-color: #2563eb;
+            transform: translateY(-2px);
+        }
+        .clear-btn {
+            background-color: #ef4444;
+            color: #fff;
+        }
+        .clear-btn:hover {
+            background-color: #dc2626;
+            transform: translateY(-2px);
+        }
+        .conjugue-fields {
+            display: none;
+        }
+        .error-message {
+            color: #dc2626;
+            font-size: 12px;
+            margin-bottom: 10px;
+            display: none;
+        }
+        .error {
+            border-color: #dc2626;
+        }
+        @media (max-width: 400px) {
+            .form-container {
+                width: 90%;
+                padding: 20px;
+            }
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
 </head>
 <body>
-    <h1>Formulário de Contrato</h1>
-    <p>Este é um exemplo mínimo. Reinsira o conteúdo do contrato.html original aqui, se necessário.</p>
+    <div class="form-container">
+        <h2>Formulário para Geração de Contrato</h2>
+
+        <form onsubmit="return validarFormulario(event)">
+            <h3>Dados do Locatário</h3>
+
+            <label for="locatario">Locatário(a):</label>
+            <input type="text" id="locatario" name="locatario">
+            <div id="locatario-error" class="error-message">Este campo é obrigatório.</div>
+
+            <label for="cpf">CPF:</label>
+            <input type="text" id="cpf" name="cpf" maxlength="14" oninput="mascaraCPF(this)">
+            <div id="cpf-error" class="error-message">CPF inválido.</div>
+
+            <label for="rg">RG:</label>
+            <input type="text" id="rg" name="rg">
+            <div id="rg-error" class="error-message">Este campo é obrigatório.</div>
+
+            <label for="expedidor">Expedidor:</label>
+            <input type="text" id="expedidor" name="expedidor">
+
+            <label for="cep">CEP do seu endereço atual:</label>
+            <input type="text" id="cep" name="cep" maxlength="9" oninput="mascaraCEP(this)" onblur="buscarCep()">
+            <div id="cep-error" class="error-message">CEP inválido (deve ter 8 dígitos).</div>
+
+            <label for="endereco">Endereço:</label>
+            <input type="text" id="endereco" name="endereco">
+
+            <label for="complemento">Complemento do endereço:</label>
+            <input type="text" id="complemento" name="complemento" placeholder="Número ou complemento">
+
+            <label for="cidade">Cidade:</label>
+            <input type="text" id="cidade" name="cidade">
+
+            <label for="uf">UF:</label>
+            <input type="text" id="uf" name="uf">
+
+            <label for="telefone">Telefone:</label>
+            <input type="text" id="telefone" name="telefone" maxlength="15" oninput="mascaraTelefone(this)">
+            <div id="telefone-error" class="error-message">Telefone inválido (deve ter 11 dígitos).</div>
+
+            <label for="profissao">Profissão:</label>
+            <input type="text" id="profissao" name="profissao">
+            <div id="profissao-error" class="error-message">Este campo é obrigatório.</div>
+
+            <label for="onde-trabalha">Onde trabalha:</label>
+            <input type="text" id="onde-trabalha" name="onde-trabalha">
+
+            <label for="telefone-comercial">Telefone comercial:</label>
+            <input type="text" id="telefone-comercial" name="telefone-comercial" maxlength="15" oninput="mascaraTelefone(this)">
+            <div id="telefone-comercial-error" class="error-message">Telefone inválido (deve ter 11 dígitos).</div>
+
+            <label for="estado-civil">Estado civil:</label>
+            <select id="estado-civil" name="estado-civil" onchange="toggleConjugueFields()">
+                <option value="solteiro" selected>Solteiro(a)</option>
+                <option value="casado">Casado(a)</option>
+            </select>
+
+            <div id="conjugue-fields" class="conjugue-fields">
+                <label for="nome-conjugue">Nome do cônjuge:</label>
+                <input type="text" id="nome-conjugue" name="nome-conjugue">
+                <div id="nome-conjugue-error" class="error-message">Este campo é obrigatório.</div>
+
+                <label for="cpf-conjugue">CPF do cônjuge:</label>
+                <input type="text" id="cpf-conjugue" name="cpf-conjugue" maxlength="14" oninput="mascaraCPF(this)">
+                <div id="cpf-conjugue-error" class="error-message">CPF inválido.</div>
+
+                <label for="telefone-conjugue">Telefone do cônjuge:</label>
+                <input type="text" id="telefone-conjugue" name="telefone-conjugue" maxlength="15" oninput="mascaraTelefone(this)">
+                <div id="telefone-conjugue-error" class="error-message">Telefone inválido (deve ter 11 dígitos).</div>
+            </div>
+
+            <label for="email">E-mail:</label>
+            <input type="email" id="email" name="email">
+            <div id="email-error" class="error-message">E-mail inválido.</div>
+
+            <label for="prazo-contrato">Prazo do contrato:</label>
+            <select id="prazo-contrato" name="prazo-contrato" onchange="updateDataTermino()">
+                <option value="" selected>Selecione</option>
+                <option value="1">1 mês</option>
+                <option value="3">3 meses</option>
+                <option value="6">6 meses</option>
+                <option value="12">1 ano</option>
+            </select>
+            <div id="prazo-contrato-error" class="error-message">Selecione uma opção.</div>
+
+            <label for="data-inicio">Data de início:</label>
+            <input type="date" id="data-inicio" name="data-inicio" value="2025-04-21" onchange="updateDataTermino()">
+            <div id="data-inicio-error" class="error-message">Este campo é obrigatório.</div>
+
+            <label for="data-termino">Data de término:</label>
+            <input type="date" id="data-termino" name="data-termino" readonly>
+
+            <label for="melhor-dia">Melhor dia para vencimento:</label>
+            <input type="text" id="melhor-dia" name="melhor-dia">
+            <div id="melhor-dia-error" class="error-message">Este campo é obrigatório.</div>
+
+            <button type="submit" class="submit-btn">Gerar Contrato</button>
+            <button type="button" class="clear-btn" onclick="document.querySelector('form').reset(); toggleConjugueFields(); updateDataTermino(); limparErros();">Limpar Formulário</button>
+        </form>
+    </div>
+
+    <script>
+        function mascaraCPF(input) {
+            let value = input.value.replace(/\D/g, '');
+            value = value.replace(/(\d{3})(\d)/, '$1.$2');
+            value = value.replace(/(\d{3})(\d)/, '$1.$2');
+            value = value.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+            input.value = value;
+        }
+
+        function mascaraCEP(input) {
+            let value = input.value.replace(/\D/g, '');
+            value = value.replace(/(\d{5})(\d)/, '$1-$2');
+            input.value = value;
+        }
+
+        function mascaraTelefone(input) {
+            let value = input.value.replace(/\D/g, '');
+            value = value.replace(/(\d{2})(\d)/, '($1) $2');
+            value = value.replace(/(\d{5})(\d)/, '$1-$2');
+            input.value = value;
+        }
+
+        function validarCPF(cpf) {
+            cpf = cpf.replace(/\D/g, '');
+            if (cpf.length !== 11 || /^(\d)\1{10}$/.test(cpf)) return false;
+
+            let soma = 0, resto;
+            for (let i = 1; i <= 9; i++) soma += parseInt(cpf.charAt(i-1)) * (11 - i);
+            resto = (soma * 10) % 11;
+            if (resto === 10 || resto === 11) resto = 0;
+            if (resto !== parseInt(cpf.charAt(9))) return false;
+
+            soma = 0;
+            for (let i = 1; i <= 10; i++) soma += parseInt(cpf.charAt(i-1)) * (12 - i);
+            resto = (soma * 10) % 11;
+            if (resto === 10 || resto === 11) resto = 0;
+            if (resto !== parseInt(cpf.charAt(10))) return false;
+
+            return true;
+        }
+
+        function limparErros() {
+            const errorMessages = document.querySelectorAll('.error-message');
+            const inputs = document.querySelectorAll('input, select');
+            errorMessages.forEach(msg => msg.style.display = 'none');
+            inputs.forEach(input => input.classList.remove('error'));
+        }
+
+        function mostrarErro(campo, mensagem) {
+            const errorDiv = document.getElementById(`${campo}-error`);
+            errorDiv.style.display = 'block';
+            errorDiv.textContent = mensagem;
+            document.getElementById(campo).classList.add('error');
+        }
+
+        function validarFormulario(event) {
+            event.preventDefault();
+            limparErros();
+            let isValid = true;
+
+            // Locatário
+            const locatario = document.getElementById('locatario').value.trim();
+            if (!locatario) {
+                mostrarErro('locatario', 'Este campo é obrigatório.');
+                isValid = false;
+            }
+
+            // CPF
+            const cpf = document.getElementById('cpf').value.replace(/\D/g, '');
+            if (!cpf || cpf.length !== 11 || !validarCPF(cpf)) {
+                mostrarErro('cpf', 'CPF inválido.');
+                isValid = false;
+            }
+
+            // RG
+            const rg = document.getElementById('rg').value.trim();
+            if (!rg) {
+                mostrarErro('rg', 'Este campo é obrigatório.');
+                isValid = false;
+            }
+
+            // CEP
+            const cep = document.getElementById('cep').value.replace(/\D/g, '');
+            if (!cep || cep.length !== 8) {
+                mostrarErro('cep', 'CEP inválido (deve ter 8 dígitos).');
+                isValid = false;
+            }
+
+            // Telefone
+            const telefone = document.getElementById('telefone').value.replace(/\D/g, '');
+            if (!telefone || telefone.length !== 11) {
+                mostrarErro('telefone', 'Telefone inválido (deve ter 11 dígitos).');
+                isValid = false;
+            }
+
+            // Profissão
+            const profissao = document.getElementById('profissao').value.trim();
+            if (!profissao) {
+                mostrarErro('profissao', 'Este campo é obrigatório.');
+                isValid = false;
+            }
+
+            // Telefone Comercial (se preenchido)
+            const telefoneComercial = document.getElementById('telefone-comercial').value.replace(/\D/g, '');
+            if (telefoneComercial && telefoneComercial.length !== 11) {
+                mostrarErro('telefone-comercial', 'Telefone inválido (deve ter 11 dígitos).');
+                isValid = false;
+            }
+
+            // Estado Civil e Campos do Cônjuge
+            const estadoCivil = document.getElementById('estado-civil').value;
+            if (estadoCivil === 'casado') {
+                const nomeConjugue = document.getElementById('nome-conjugue').value.trim();
+                if (!nomeConjugue) {
+                    mostrarErro('nome-conjugue', 'Este campo é obrigatório.');
+                    isValid = false;
+                }
+
+                const cpfConjugue = document.getElementById('cpf-conjugue').value.replace(/\D/g, '');
+                if (!cpfConjugue || cpfConjugue.length !== 11 || !validarCPF(cpfConjugue)) {
+                    mostrarErro('cpf-conjugue', 'CPF inválido.');
+                    isValid = false;
+                }
+
+                const telefoneConjugue = document.getElementById('telefone-conjugue').value.replace(/\D/g, '');
+                if (!telefoneConjugue || telefoneConjugue.length !== 11) {
+                    mostrarErro('telefone-conjugue', 'Telefone inválido (deve ter 11 dígitos).');
+                    isValid = false;
+                }
+            }
+
+            // E-mail
+            const email = document.getElementById('email').value.trim();
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!email || !emailRegex.test(email)) {
+                mostrarErro('email', 'E-mail inválido.');
+                isValid = false;
+            }
+
+            // Prazo do Contrato
+            const prazoContrato = document.getElementById('prazo-contrato').value;
+            if (!prazoContrato) {
+                mostrarErro('prazo-contrato', 'Selecione uma opção.');
+                isValid = false;
+            }
+
+            // Data de Início
+            const dataInicio = document.getElementById('data-inicio').value;
+            if (!dataInicio) {
+                mostrarErro('data-inicio', 'Este campo é obrigatório.');
+                isValid = false;
+            }
+
+            // Melhor Dia para Vencimento
+            const melhorDia = document.getElementById('melhor-dia').value.trim();
+            if (!melhorDia) {
+                mostrarErro('melhor-dia', 'Este campo é obrigatório.');
+                isValid = false;
+            }
+
+            if (isValid) {
+                alert('Formulário válido! Contrato gerado com sucesso.');
+                // Aqui você pode adicionar lógica para gerar o contrato (ex.: baixar um PDF).
+            }
+
+            return isValid;
+        }
+
+        function toggleConjugueFields() {
+            const estadoCivil = document.getElementById('estado-civil').value;
+            const conjugueFields = document.getElementById('conjugue-fields');
+            if (estadoCivil === 'casado') {
+                conjugueFields.style.display = 'block';
+            } else {
+                conjugueFields.style.display = 'none';
+            }
+        }
+
+        function updateDataTermino() {
+            const dataInicio = new Date(document.getElementById('data-inicio').value);
+            const prazo = parseInt(document.getElementById('prazo-contrato').value);
+
+            if (!isNaN(dataInicio.getTime()) && prazo) {
+                const dataTermino = new Date(dataInicio);
+                dataTermino.setMonth(dataInicio.getMonth() + prazo);
+                
+                const year = dataTermino.getFullYear();
+                const month = String(dataTermino.getMonth() + 1).padStart(2, '0');
+                const day = String(dataTermino.getDate()).padStart(2, '0');
+                
+                document.getElementById('data-termino').value = `${year}-${month}-${day}`;
+            } else {
+                document.getElementById('data-termino').value = '';
+            }
+        }
+
+        async function buscarCep() {
+            const cep = document.getElementById('cep').value.replace(/\D/g, '');
+            if (cep.length !== 8) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+                const data = await response.json();
+
+                if (data.erro) {
+                    alert('CEP não encontrado.');
+                    return;
+                }
+
+                document.getElementById('endereco').value = data.logradouro || '';
+                document.getElementById('complemento').value = data.complemento || '';
+                document.getElementById('cidade').value = data.localidade || '';
+                document.getElementById('uf').value = data.uf || '';
+            } catch (error) {
+                alert('Erro ao buscar o CEP. Tente novamente.');
+            }
+        }
+
+        // Inicializar a página
+        updateDataTermino();
+    </script>
 </body>
 </html>
