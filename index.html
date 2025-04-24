@@ -109,7 +109,7 @@
     <div class="form-container">
         <h2>Formulário para Geração de Contrato</h2>
 
-        <form onsubmit="return validarFormulario(event)">
+        <form onsubmit="enviarFormulario(event)">
             <h3>Dados do Locatário</h3>
 
             <label for="locatario">Locatário(a):</label>
@@ -430,6 +430,29 @@
 
         // Inicializar a página
         updateDataTermino();
+
+        async function enviarFormulario(event) {
+    event.preventDefault();
+    const valido = validarFormulario(event);
+    if (!valido) return;
+
+    const formData = new FormData(event.target);
+    const dados = Object.fromEntries(formData.entries());
+
+    const response = await fetch('/api/gerar-pdf', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(dados)
+    });
+
+    const blob = await response.blob();
+    const url = window.URL.createObjectURL(blob);
+    window.open(url, '_blank');
+}
+
+        
     </script>
 </body>
 </html>
