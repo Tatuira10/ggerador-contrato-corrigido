@@ -447,9 +447,14 @@
         body: JSON.stringify(dados)
     });
 
-    const blob = await response.blob();
-    const url = window.URL.createObjectURL(blob);
-    window.open(url, '_blank');
+const blob = await response.blob();
+const url = window.URL.createObjectURL(blob);
+
+const a = document.createElement('a');
+a.href = url;
+a.target = '_blank';
+a.click();
+
 }
 
         
